@@ -206,6 +206,7 @@ class Worker:
             **self.answers.combined,
             _copier_answers=self._answers_to_remember(),
             _copier_conf=conf,
+            _private_vars=self.template.private_vars,
             _folder_name=self.subproject.local_abspath.name,
         )
 

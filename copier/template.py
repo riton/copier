@@ -56,11 +56,13 @@ COPIER_JINJA_BREAK = SpecifierSet("<=6.0.0a5", prereleases=True)
 
 def filter_config(data: AnyByStrDict) -> Tuple[AnyByStrDict, AnyByStrDict]:
     """Separates config and questions data."""
-    conf_data: AnyByStrDict = {"secret_questions": set()}
+    conf_data: AnyByStrDict = {"secret_questions": set(), "private_vars": dict()}
     questions_data = {}
     for k, v in data.items():
         if k == "_secret_questions":
             conf_data["secret_questions"].update(v)
+        elif k.startswith("__"):
+            conf_data["private_vars"][k[2:]] = v
         elif k.startswith("_"):
             conf_data[k[1:]] = v
         else:
@@ -224,6 +226,10 @@ class Template:
         with suppress(KeyError):
             verify_copier_version(result["min_copier_version"])
         return result
+
+    @cached_property
+    def private_vars(self) -> AnyByStrDict:
+        return self.config_data["private_vars"]
 
     @cached_property
     def default_answers(self) -> AnyByStrDict:
